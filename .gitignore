@@ -1,0 +1,163 @@
+## -------------------------------
+## GITIGNORE PARA PROJETO .NET / C#
+## Compatível com Visual Studio 2022, Rider e VSCode
+## -------------------------------
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]emp/
+[Tt]mp/
+*.log
+*.tlog
+*.cache
+*.obj
+*.pdb
+*.tmp
+*.svclog
+
+# Arquivos de configuração do usuário (não versionar)
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Diretórios do Visual Studio
+.vs/
+.vscode/
+_ReSharper.Caches/
+.idea/
+*.sln.iml
+
+# Configurações locais do Rider / ReSharper
+*.DotSettings.user
+*.DotSettings
+
+# Arquivos de build automáticos
+project.lock.json
+project.fragment.lock.json
+artifacts/
+publish/
+wwwroot/dist/
+dist/
+node_modules/
+coverage/
+TestResults/
+BenchmarkDotNet.Artifacts/
+out/
+Generated/
+AppPackages/
+
+# Arquivos de pacotes NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+# Pasta global do NuGet
+.nuget/
+packages/
+# Pasta de cache de pacotes local
+*.nuget.props
+*.nuget.targets
+
+# Arquivos temporários de testes e builds
+*.dbmdl
+*.bak
+*.Backup
+*.swp
+*.swo
+*.orig
+*.tmp
+*.temp
+*.sqlite
+
+# Configurações sensíveis
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.secrets.json
+secrets.json
+.env
+.env.*
+
+# Certificados e chaves
+*.pfx
+*.key
+*.cer
+*.crt
+*.pem
+
+# Diretórios específicos de publicação
+publish/
+deploy/
+bin/Release/
+bin/Debug/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Arquivos gerados por ferramentas externas
+*.coverage
+*.coveragexml
+*.ncrunchproject
+*.ncrunchsolution
+nCrunchTemp_*
+
+# Logs de execução
+*.log
+*.error
+*.trace
+*.stacktrace
+
+# Arquivos de migração temporários
+MigrationsBackup/
+MigrationsArchive/
+*.sql
+
+# Cache de ferramentas de análise
+.analyzers/
+.stylecop/
+.editorconfig.cache
+
+# Arquivos de build do Docker
+Dockerfile.*
+docker-compose.*
+.dockerignore
+
+# Arquivos de publicação do Azure
+PublishProfiles/
+*.pubxml
+*.publishproj
+
+# Arquivos de documentação
+*.docx
+*.pdf
+*.rtf
+*.odt
+~$*
+
+# Scripts e configurações locais
+*.cmd
+*.bat
+*.sh
+*.ps1
+
+# Diretórios de dados e backups
+data/
+_backups/
+_backup/
+uploads/
+upload/
+
+# Arquivos gerados pelo EF Core
+Migrations/obj/
+Migrations/bin/
+
+# Ferramentas do JetBrains
+.idea/
+*.sln.iml
