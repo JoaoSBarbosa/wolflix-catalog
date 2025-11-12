@@ -2,7 +2,6 @@
 using JB.Wolflix.Catalog.Domain.Exceptions;
 using JB.Wolflix.Catalog.Domain.Utils;
 using JB.Wolflix.Catalog.UnitTest.Common;
-using System;
 using Xunit;
 
 // Alias usado para referenciar a entidade real do domínio
@@ -31,64 +30,27 @@ namespace JB.Wolflix.Catalog.UnitTest.Domain.Entity.Category
         {
             var fix = new CategoryTestFixture();
 
-            for (int i =0; i < numerOfTest; i++)
+            for (int i = 0; i < numerOfTest; i++)
             {
                 var isOdd = i % 2 == 1;
                 yield return new object[] { fix.GetValidCategoryName()[..(isOdd ? 1 : 2)] };
 
             }
-            // A palavra-chave 'yield' permite retornar cada valor um de cada vez
-            //yield return new object[] { "12" };
-            //yield return new object[] { "1" };
-            //yield return new object[] { "a" };
-            //yield return new object[] { "b" };
-            //yield return new object[] { "ca" };
-            //yield return new object[] { "Gu" };
-            //yield return new object[] { "XP" };
         }
-        // =====================================================================
-        // 🧩 SOBRE O [Fact]
-        // ---------------------------------------------------------------------
-        // - É um atributo do framework xUnit que marca o método como teste unitário.
-        // - Não recebe parâmetros de entrada (valores para o método), 
-        //   apenas propriedades de configuração:
-        //      • DisplayName → nome exibido no relatório
-        //      • Skip        → ignora o teste (ex: ainda não implementado)
-        //      • Timeout     → tempo máximo (em milissegundos)
-        // =====================================================================
 
-        [Fact(DisplayName = nameof(Instantiate))]
+        #region Tests of instantiation
+        [Fact(DisplayName = "Deve instanciar uma categoria válida")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)] // Agrupa/classifica o teste por domínio
-        public void Instantiate()
+        public void Should_Instantiate_Validate_Category()
         {
-            // ================================================================
-            // 🔹 ARRANGE → Prepara o cenário do teste
-            // ------------------------------------------------
-            // Cria um objeto anônimo contendo dados válidos para a categoria.
-            // ================================================================
             var validCategory = _fixture.GetValidCategory();
 
-            // Captura o tempo antes e depois da criação, para validar CreatedAt
             var dateTimeBefore = DateTime.Now;
-
-            // ================================================================
-            // 🔹 ACT → Executa a ação a ser testada
-            // ------------------------------------------------
-            // Instancia uma nova categoria com nome e descrição válidos.
-            // ================================================================
             var category = new DomainEntity.Category(validCategory.Name, validCategory.Description);
 
             var dateTimeAfter = DateTime.Now.AddSeconds(1);
 
-            // ================================================================
-            // 🔹 ASSERT → Verifica se o resultado é o esperado
-            // ------------------------------------------------
-            // Aqui conferimos se o objeto foi criado corretamente e se as
-            // propriedades automáticas (Id, CreatedAt, IsActive) estão válidas.
-            // ================================================================
 
-
-            /* ---- Validações com Fluent Assertions */
 
             category.Should().NotBeNull();
             category.Name.Should().Be(validCategory.Name);
@@ -99,26 +61,13 @@ namespace JB.Wolflix.Catalog.UnitTest.Domain.Entity.Category
             (category.CreatedAt < dateTimeAfter).Should().BeTrue();
             category.IsActive.Should().BeTrue();
 
-            /* ---- Validações com Assert */
-            //Assert.NotNull(category);
-            //Assert.Equal(validData.Name, category.Name);
-            //Assert.Equal(validData.Description, category.Description);
-            //Assert.NotEqual(default(Guid), category.Id);
-            //Assert.NotEqual(default(DateTime), category.CreatedAt);
-
-            // --- Verifica se CreatedAt está dentro do intervalo de tempo correto ---
-            //Assert.True(category.CreatedAt > dateTimeBefore);
-            //Assert.True(category.CreatedAt < dateTimeAfter);
-            //Assert.True(category.IsActive);
         }
 
-
-
-        [Theory(DisplayName = nameof(InstantiateWithIsActiveStatus))]
+        [Theory(DisplayName = "Deve instanciar uma categoria com status de ativo ou inativo")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
         [InlineData(true)]   // Caso 1 → Categoria ativa
         [InlineData(false)]  // Caso 2 → Categoria inativa
-        public void InstantiateWithIsActiveStatus(bool isActive)
+        public void Should_Instantiate_Category_With_IsActiveStatus(bool isActive)
         {
 
             var validateCategory = _fixture.GetValidCategory();
@@ -135,134 +84,95 @@ namespace JB.Wolflix.Catalog.UnitTest.Domain.Entity.Category
             (category.CreatedAt >= dateTimeBefore).Should().BeTrue();
             (category.CreatedAt <= dateTimeAfter).Should().BeTrue();
             category.IsActive.Should().Be(isActive);
-
-            //Assert.NotNull(category);
-            //Assert.Equal(validData.Name, category.Name);
-            //Assert.Equal(validData.Description, category.Description);
-            //Assert.NotEqual(default(Guid), category.Id);
-            //Assert.NotEqual(default(DateTime), category.CreatedAt);
-            //Assert.True(category.CreatedAt > dateTimeBefore);
-            //Assert.True(category.CreatedAt < dateTimeAfter);
-
-            // --- Verifica se o status de IsActive foi atribuído corretamente ---
-            //Assert.Equal(isActive, category.IsActive);
         }
+        #endregion
 
-
-
-        [Theory(DisplayName = nameof(InstantiateErrorWhenNameIsEmpty))]
+        #region Tests of instantiation Empty or null exceptions
+        [Theory(DisplayName = "Deve lançar uma exceção ao instancia com um nome vazio")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
         [InlineData("")]
         [InlineData(null)]
         [InlineData("      ")]
-        public void InstantiateErrorWhenNameIsEmpty(string? value)
+        public void Should_Throw_When_Instantiete_With_NameIsEmpty(string? value)
         {
 
             Action action = () => new DomainEntity.Category(value!, _fixture.GetValidCategoryDescription());
-
-            /*  Teste usando Xunit Assertion */
-            /* var exception = Assert.Throws<EntityValidationException>(action);
-             * Assert.Equal("Nome não deve ser vazio ou nulo", exception.Message); */
-            //Assert->Verifica se a ação lança a exceção esperada
             action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.NameNullExceptionMessage);
         }
 
-        [Fact(DisplayName = nameof(InsertiateErrorWhenDescriptionIsNull))]
+        [Fact(DisplayName = "Deve lançar uma exceção ao instanciar com descrição nula")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void InsertiateErrorWhenDescriptionIsNull()
+        public void Should_Throw_When_Instantiate_With_DescriptionIsNull()
         {
             Action action = () => new DomainEntity.Category(_fixture.GetValidCategoryName(), null!);
-            // Testes utilizando Assertion Xunit
-            /*var exception = Assert.Throws<EntityValidationException>(action);
-            Assert.Equal("Descrição não deve ser vazio ou nulo", exception.Message);*/
-
-            // Teste utilizando FluentAssertion
             action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.DescriptionNullExceptionMessage);
 
         }
-
-
-        [Theory(DisplayName = nameof(InsertationErrorWhenNameIsLessThanThreeCharacters))]
+        #endregion
+        #region Validation length rules
+        [Theory(DisplayName = "Deve lançar exceção quando o nome tiver menos de 3 caracteres")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
         [MemberData(nameof(GetInvalidadeNameWithThan3Caharacters), parameters: 5)]
-        public void InsertationErrorWhenNameIsLessThanThreeCharacters(string invalidName)
+        public void Should_Throw_When_NameIsLessThanThreeCharacters(string invalidName)
         {
 
             Action action = () => _fixture.GetValidCategoryByParam(invalidName);
-            // TESTE PADRÃO
-            //var exception = Assert.Throws<EntityValidationException>(action);
-            //Assert.Equal("Nome deve ter um tamanho mínimo de três caracteres.", exception.Message);
-
-            // Teste usando FluentAssertion
-            action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.NameMinLengthExceptionMessage);
+            action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.NameMinLengthExceptionMessageParam("Nome", 3));
 
         }
 
 
-        [Fact(DisplayName = nameof(InsertationErrorWhenNameIsGreaterThan255Characters))]
+        [Fact(DisplayName = "Deve lançar exceção quando o nome ultrapassar 255 caracteres")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void InsertationErrorWhenNameIsGreaterThan255Characters()
+        public void Should_Throw_When_NameIsGreaterThan255Characters()
         {
             var longName = new string('A', 256);
             var validDescription = _fixture.GetValidCategoryDescription(); // aplicando melhorias com dados randômicos da lib Bogus
             Action action = () => new DomainEntity.Category(longName, validDescription);
-
-            //var exception = Assert.Throws<EntityValidationException>(action);
-            //Assert.Equal("Nome deve ter um tamanho máximo de 255 caracteres.", exception.Message);
-
             action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.NameMaxLengthExceptionMessage);
         }
 
 
-        [Fact(DisplayName = nameof(InsertationErrorWhenDescriptionIsGreaterThan10000Characters))]
+        [Fact(DisplayName = "Deve lançar exceção quando a descrição ultrapassar 10.000 caracteres")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void InsertationErrorWhenDescriptionIsGreaterThan10000Characters()
+        public void Should_Throw_When_DescriptionIsGreaterThan10000Characters()
         {
             var longDescription = new string('D', 10_001);
             var validName = _fixture.GetValidCategoryName(); // Ddados randômicos com Bogus
             Action ACTION = () => new DomainEntity.Category(validName, longDescription);
-            //var exception = Assert.Throws<EntityValidationException>(ACTION);
-            //Assert.Equal("Descrição deve ter um tamanho máximo de 10.000 caracteres.", exception.Message);
             ACTION.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.DescriptionMaxLengthExceptionMessage);
 
         }
+        #endregion
 
-
-        [Fact(DisplayName = nameof(Activate))]
+        #region Activation / Inactivation
+        [Fact(DisplayName = "Deve ativar a categoria corretamente")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void Activate()
+        public void Should_Activate_Category()
         {
             var validCategory = _fixture.GetValidCategory();
-
-
             var category = new DomainEntity.Category(validCategory.Name, validCategory.Description, false);
             category.Activate();
-            //Assert.True(category.IsActive);
             category.IsActive.Should().BeTrue();
 
         }
 
-        [Fact(DisplayName = nameof(Inactive))]
+        [Fact(DisplayName = "Deve inativar a categoria corretamente")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void Inactive()
+        public void Should_Inactivate_Category()
         {
-
-
             var validCategory = _fixture.GetValidCategory();
-
             var category = new DomainEntity.Category(validCategory.Name, validCategory.Description, true);
-
             category.Inactive();
-
-            //Assert.False(category.IsActive);
             category.IsActive.Should().BeFalse();
 
         }
+        #endregion
 
-
-        [Fact(DisplayName = nameof(Update))]
+        #region Update tests
+        [Fact(DisplayName = "Deve atualizar nome e descrição da categoria")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void Update()
+        public void Should_Update_Name_And_Description()
         {
             var category = _fixture.GetValidCategory();
             var newData = new
@@ -272,73 +182,49 @@ namespace JB.Wolflix.Catalog.UnitTest.Domain.Entity.Category
             };
 
             category.Update(newData.Name, newData.Description);
-
             category.Name.Should().BeEquivalentTo(newData.Name);
             category.Description.Should().BeEquivalentTo(newData.Description);
-
-            //Assert.Equal(newData.Name, category.Name);
-            //Assert.Equal(newData.Description, category.Description);
-
-
         }
 
-        [Fact(DisplayName = nameof(UpdateOnlyName))]
+        [Fact(DisplayName = "Deve atualizar apenas o nome da categoria")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void UpdateOnlyName()
+        public void Should_Update_Only_Name()
         {
-
             var category = _fixture.GetValidCategory();
             var newName = _fixture.GetValidCategoryDescription();
-
             var currentDescription = category.Description;
-
             category.Update(newName);
-
-            //Assert.Equal(newName, category.Name);
-            //Assert.Equal(currentDescription, category.Description);
-
             category.Name.Should().BeEquivalentTo(newName);
             category.Description.Should().BeEquivalentTo(currentDescription);
 
         }
 
 
-        [Fact(DisplayName = nameof(UpdateOnlyDescription))]
+        [Fact(DisplayName = "Deve atualizar apenas a descrição da categoria")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void UpdateOnlyDescription()
+        public void Should_Update_Only_Description()
         {
             var categoryNew = _fixture.GetValidCategory();
             var newDescription = _fixture.GetValidCategoryDescription();
             var currentName = categoryNew.Name;
-
             categoryNew.Update(null, newDescription);
-            //Assert.Equal(newDescription, categoryNew.Description);
-            //Assert.Equal(currentName, categoryNew.Name);
-
             categoryNew.Description.Should().BeEquivalentTo(newDescription);
             categoryNew.Name.Should().BeEquivalentTo(currentName);
 
 
         }
 
-        [Theory(DisplayName = nameof(UpdateShouldNotSaveNameIEmpty))]
+        [Theory(DisplayName = "Não deve atualizar o nome quando for vazio ou nulo")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
         [InlineData("")]
         [InlineData("  ")]
         [InlineData(null)]
-        public void UpdateShouldNotSaveNameIEmpty(string? name)
+        public void Should_Not_Update_Name_When_EmptyOrNull(string? name)
         {
-
             var category = _fixture.GetValidCategory();
             var oldName = category.Name;
             var currentDescriptio = category.Description;
             category.Update(name);
-
-            //Assert.Equal(currentDescriptio, category.Description);
-            //Assert.NotEqual(name, category.Name);
-            //Assert.Equal(oldName, category.Name);
-
-
             category.Description.Should().BeEquivalentTo(currentDescriptio);
             category.Name.Should().NotBeEquivalentTo(name);
             category.Name.Should().BeEquivalentTo(oldName);
@@ -347,65 +233,50 @@ namespace JB.Wolflix.Catalog.UnitTest.Domain.Entity.Category
 
         }
 
-        [Theory(DisplayName = nameof(UpdateShouldNotSaveDescriptionIEmpty))]
+        [Theory(DisplayName = "Não deve atualizar a descrição quando for vazia ou nula")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
         [InlineData("")]
         [InlineData("  ")]
         [InlineData(null)]
-        public void UpdateShouldNotSaveDescriptionIEmpty(string? description)
+        public void Should_Not_Update_Description_When_EmptyOrNull(string? description)
         {
             var category = _fixture.GetValidCategory();
             var oldDescription = category.Description;
             category.Update(null, description);
-
-            //Assert.Equal(oldDescription, category.Description);
-            //Assert.NotEqual(description, category.Description);
-            //Assert.Equal("Teste 1", category.Name);
-
             category.Description.Should().BeEquivalentTo(oldDescription);
             category.Description.Should().NotBeEquivalentTo(description);
         }
 
-        [Theory(DisplayName = nameof(UpdateErrorWhenNameIsLessThan3Characters))]
+        [Theory(DisplayName = "Deve lançar exceção ao atualizar com nome menor que 3 caracteres")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        [MemberData(nameof(GetInvalidadeNameWithThan3Caharacters), parameters:10)]
-        public void UpdateErrorWhenNameIsLessThan3Characters(string? invalidName)
+        [MemberData(nameof(GetInvalidadeNameWithThan3Caharacters), parameters: 10)]
+        public void Should_Throw_When_Update_With_Name_LessThanThreeCharacters(string? invalidName)
         {
             var category = _fixture.GetValidCategory();
             Action action = () => category.Update(invalidName);
-
-            //var exception = Assert.Throws<EntityValidationException>(action);
-            //Assert.Equal("Nome deve ter um tamanho mínimo de três caracteres.", exception.Message);
-
-            action.Should().Throw<EntityValidationException>().WithMessage(CategoryTestFixture.NameMinLengthExceptionMessage);
+            action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.NameMinLengthExceptionMessageParam("Nome", 3));
         }
 
-        [Fact(DisplayName = nameof(UpdateErrorWhenNameIsGreaterThan255Characters))]
+        [Fact(DisplayName = "Deve lançar exceção ao atualizar com nome maior que 255 caracteres")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void UpdateErrorWhenNameIsGreaterThan255Characters()
+        public void Should_Throw_When_Update_With_Name_GreaterThan255Characters()
         {
             var category = _fixture.GetValidCategory();
             var longName = _fixture.Faker.Lorem.Letter(256);
             Action action = () => category.Update(longName);
-            //var exception = Assert.Throws<EntityValidationException>(action);
-            //Assert.Equal("Nome deve ter um tamanho máximo de 255 caracteres.", exception.Message);
-
-            action.Should().Throw<EntityValidationException>().WithMessage(CategoryTestFixture.NameMaxLengthExceptionMessage);
+            action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.NameMaxLengthExceptionMessage);
         }
 
-        [Fact(DisplayName = nameof(UpdateErrorWhenDescriptionIsGreaterThan10000Characters))]
+        [Fact(DisplayName = "Deve lançar exceção ao atualizar com descrição maior que 10.000 caracteres")]
         [Trait(TestCategories.Domain, TestCategories.CategoryAggregate)]
-        public void UpdateErrorWhenDescriptionIsGreaterThan10000Characters()
+        public void Should_Throw_When_Update_With_Description_GreaterThan10000Characters()
         {
             var category = _fixture.GetValidCategory();
             var longDescription = _fixture.Faker.Lorem.Letter(10_004);
             Action action = () => category.Update(null, longDescription);
-            //var message = Assert.Throws<EntityValidationException>(action);
-            //Assert.Equal("Descrição deve ter um tamanho máximo de 10.000 caracteres.", message.Message);
-
-            action.Should().Throw<EntityValidationException>().WithMessage(CategoryTestFixture.DescriptionMaxLengthExceptionMessage);
+            action.Should().Throw<EntityValidationException>().WithMessage(CategoryExceptionMessage.DescriptionMaxLengthExceptionMessage);
 
         }
-
+        #endregion
     }
 }

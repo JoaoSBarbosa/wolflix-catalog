@@ -61,7 +61,7 @@ namespace JB.Wolflix.Catalog.Domain.Entity
         {
             DomainValidation.NotNullOrEmpty(Name, "Nome");
             DomainValidation.NotNullOrEmpty(Description, "Descrição");
-            DomainValidation.MinLength(Name, "Nome");
+            DomainValidation.MinLength(Name, "Nome", 3);
             DomainValidation.MaxLength(Name, "Nome");
             DomainValidation.MaxLengthDescription(Description, "Descrição");
             //if (String.IsNullOrWhiteSpace(Name)) throw new EntityValidationException(CategoryExceptionMessage.NameNullExceptionMessage);

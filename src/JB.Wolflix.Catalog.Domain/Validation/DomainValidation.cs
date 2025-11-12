@@ -21,9 +21,9 @@ namespace JB.Wolflix.Catalog.Domain.Validation
         {
             if (string.IsNullOrWhiteSpace(target)) throw new EntityValidationException(CategoryExceptionMessage.NameNullExceptionMessageParam(fieldName));
         }
-        public static void MinLength(string target, string fieldName)
+        public static void MinLength(string target, string fieldName, int minLenght)
         {
-            if (target.Length < 3) throw new EntityValidationException(CategoryExceptionMessage.NameMinLengthExceptionMessageParam(fieldName));
+            if (target.Length < minLenght) throw new EntityValidationException(CategoryExceptionMessage.NameMinLengthExceptionMessageParam(fieldName, minLenght));
         }
 
         public static void MaxLength(string target, string fieldName)
